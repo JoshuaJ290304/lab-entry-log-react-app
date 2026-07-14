@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 const AddLogEntry = () => {
   const [formData, setFormData] = useState({
@@ -12,11 +13,41 @@ const AddLogEntry = () => {
     date: "",
   });
 
+  const [message, setMessage] = useState("");
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/add-log-entry",
+        formData
+      );
+
+      setMessage(response.data.message || "Log Entry Added Successfully");
+
+      setFormData({
+        name: "",
+        dept: "",
+        sem: "",
+        course: "",
+        systemNo: "",
+        login: "",
+        logout: "",
+        date: "",
+      });
+
+    } catch (error) {
+      console.log(error);
+      setMessage("Failed to Add Log Entry");
+    }
   };
 
   const handleReset = () => {
@@ -30,6 +61,8 @@ const AddLogEntry = () => {
       logout: "",
       date: "",
     });
+
+    setMessage("");
   };
 
   return (
@@ -43,7 +76,13 @@ const AddLogEntry = () => {
 
         <div className="card-body">
 
-          <form>
+          {message && (
+            <div className="alert alert-info text-center">
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit}>
 
             <div className="row">
 
@@ -55,6 +94,7 @@ const AddLogEntry = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -66,6 +106,7 @@ const AddLogEntry = () => {
                   name="dept"
                   value={formData.dept}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -77,6 +118,7 @@ const AddLogEntry = () => {
                   name="sem"
                   value={formData.sem}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -88,6 +130,7 @@ const AddLogEntry = () => {
                   name="course"
                   value={formData.course}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -99,6 +142,7 @@ const AddLogEntry = () => {
                   name="systemNo"
                   value={formData.systemNo}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -110,6 +154,7 @@ const AddLogEntry = () => {
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -121,6 +166,7 @@ const AddLogEntry = () => {
                   name="login"
                   value={formData.login}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -132,6 +178,7 @@ const AddLogEntry = () => {
                   name="logout"
                   value={formData.logout}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
