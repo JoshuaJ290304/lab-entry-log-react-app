@@ -1,7 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const ViewLogEntries = () => {
-  const [logs] = useState([]);
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
+  const fetchLogs = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/view-log-entry"
+      );
+
+      setLogs(response.data);
+      setLoading(false);
+    } catch (err) {
+      console.log(err);
+      setError("Unable to fetch log entries.");
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container mt-5 text-center">
+        <div className="spinner-border text-primary"></div>
+        <p className="mt-2">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger text-center">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
@@ -17,10 +58,13 @@ const ViewLogEntries = () => {
         <div className="card-body">
 
           {logs.length === 0 ? (
+
             <div className="alert alert-warning text-center">
-              No Log Entries Available
+              No Log Entries Found
             </div>
+
           ) : (
+
             <div className="table-responsive">
 
               <table className="table table-bordered table-striped table-hover">
@@ -28,6 +72,7 @@ const ViewLogEntries = () => {
                 <thead className="table-dark">
 
                   <tr>
+                    <th>#</th>
                     <th>Name</th>
                     <th>Department</th>
                     <th>Semester</th>
@@ -44,8 +89,9 @@ const ViewLogEntries = () => {
 
                   {logs.map((log, index) => (
 
-                    <tr key={index}>
+                    <tr key={log._id || index}>
 
+                      <td>{index + 1}</td>
                       <td>{log.name}</td>
                       <td>{log.dept}</td>
                       <td>{log.sem}</td>
@@ -64,6 +110,7 @@ const ViewLogEntries = () => {
               </table>
 
             </div>
+
           )}
 
         </div>
